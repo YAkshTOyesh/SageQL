@@ -1,12 +1,33 @@
-"""app.py"""
 import streamlit as st
 
-# Initialize st.session_state.beans
-st.session_state.beans = st.session_state.get("beans", 0)
+# Set Streamlit page configuration
+st.set_page_config(page_title="Sage QL", page_icon="🧠", layout="wide")
 
-st.title("Bean counter :paw_prints:")
+st.title("🧠 Welcome to Sage QL!")
+st.subheader("Your AI-powered SQL Query Assistant")
 
-addend = st.number_input("Beans to add", 0, 10)
-if st.button("Add"):
-    st.session_state.beans += addend
-st.markdown(f"Beans counted: {st.session_state.beans}")
+# Layout using columns
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.write("""
+    **Sage QL** helps you generate SQL queries using natural language.  
+    No need to write complex SQL—just ask a question, and let AI do the work!
+
+    ### 🔹 Features:
+    - 🗣️ **Natural Language to SQL**
+    - 📊 **Query Execution & Visualization**
+    - ⚡ **AI-Powered Optimizations**
+    - 🛠 **Easy-to-Use Interface**
+
+    Get started by navigating to the **Chat** section from the sidebar.
+    """)
+
+with col2:
+    st.image("images/Blue Gold Elegant Minimalist Digital Marketer LinkedIn Banner.png", use_column_width=True)  # Placeholder image
+
+st.markdown("---")
+st.info("👉 Navigate to the **Chat** tab from the sidebar to start querying!")
+
+with st.echo():
+    st.write("Code will be executed and printed")
