@@ -7,7 +7,7 @@ st.title("🧠 Welcome to Sage QL!")
 st.subheader("Your AI-powered SQL Query Assistant")
 
 # Layout using columns
-col1, col2 = st.columns([2, 1])
+col1, col2 = st.columns(2)
 
 with col1:
     st.write("""
@@ -24,7 +24,7 @@ with col1:
     """)
 
 with col2:
-    st.image("images/Blue Gold Elegant Minimalist Digital Marketer LinkedIn Banner.png", use_column_width=True)  # Placeholder image
+    st.image("images/Blue Gold Elegant Minimalist Digital Marketer LinkedIn Banner.png", use_container_width=True)  # Placeholder image
 
 st.markdown("---")
 st.info("👉 Navigate to the **Chat** tab from the sidebar to start querying!")
