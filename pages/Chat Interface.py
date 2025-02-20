@@ -28,7 +28,10 @@ if "messages" not in st.session_state:
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        if message["role"] == "assistant":
+            st.code(message["content"], language="sql")
+        else:
+            st.markdown(message["content"])
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
@@ -42,8 +45,15 @@ if prompt := st.chat_input("What is up?"):
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.write("Generating SQL query...")
-        output = st.write_stream(fetch_sql_stream(prompt))  # ✅ Correct way to stream response
+
+        sql_code = ""  # Initialize empty SQL code block
+        sql_display = st.empty()  # Create a placeholder for streaming output
+
+        for chunk in fetch_sql_stream(prompt):
+            sql_code += chunk + " "  # Append each chunk to the SQL code
+            sql_display.code(sql_code, language="sql")  # Update display dynamically
+            # st.code(output, language="sql")  # ✅ Correct way to stream response
 
     
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": output})
+    st.session_state.messages.append({"role": "assistant", "content": sql_code})
