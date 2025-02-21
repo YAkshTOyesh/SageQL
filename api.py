@@ -11,20 +11,6 @@ class QueryRequest(BaseModel):
 
 api = FastAPI()
 
-# # Async function to stream SQL generation
-# async def generate_sql_response(query: str):
-#     table_name = str("FROM " + query)
-#     sql_fragments = [
-#         "SELECT * ",
-#         table_name,
-#         "WHERE age > 30 ",
-#         "AND country = 'USA';"
-#     ]
-
-#     for fragment in sql_fragments:
-#         yield json.dumps({"sql_part": fragment}) + "\n"
-#         await asyncio.sleep(0.5)  # Non-blocking sleep for async streaming
-
 # Endpoint for streaming SQL generation
 # Async generator to stream SQL query parts
 async def generate_sql_response(query: str):
