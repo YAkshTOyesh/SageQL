@@ -1,9 +1,6 @@
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-import asyncio
-import json
 from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
+from services.open_router import query_openrouter
 
 # Create a Pydantic model for request body validation
 class QueryRequest(BaseModel):
@@ -12,16 +9,17 @@ class QueryRequest(BaseModel):
 api = FastAPI()
 
 # Endpoint for streaming SQL generation
-# Async generator to stream SQL query parts
-async def generate_sql_response(query: str):
-    sql_query = f"SELECT * FROM users WHERE name LIKE '%{query}%';"  # Full SQL query
-    words = sql_query.split()  # Split query into words
 
-    for word in words:
-        yield json.dumps({"sql_part": word}) + "\n"  # Send each word as JSON
-        await asyncio.sleep(0.1)  # Simulate streaming delay
+async def generate_sql_response(prompt:str):
+    # Fetch the response from OpenRouter
+    response = await query_openrouter(prompt)
+    whole_message = response.choices[0].message.content
+    
+    # Return the result as a JSON response
+    return {"sql_part": whole_message}
 
 @api.post("/generate_sql")
 async def generate_sql(request: QueryRequest):
-    return StreamingResponse(generate_sql_response(request.query), media_type="application/json")
-    # return StreamingResponse(generate_sql_response(query["query"]), media_type="application/json")
+    # Return the generated SQL part as JSON
+    json_ans = await generate_sql_response(request.query)
+    return json_ans

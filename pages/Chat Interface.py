@@ -11,11 +11,24 @@ API_URL = "http://127.0.0.1:8000/generate_sql"
 # Function to stream SQL response
 # Function to fetch and stream SQL response word by word
 def fetch_sql_stream(query):
-    with requests.post(API_URL, json={"query": query}, stream=True) as response:
-        for line in response.iter_lines():
-            if line:
-                data = json.loads(line.decode("utf-8"))  # Convert JSON response to dict
-                yield data["sql_part"] + " "  # Extract the value of "sql_part"
+ # Send POST request
+    response = requests.post(API_URL, json={"query": query})
+
+    # Check if the response is successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+
+        # Extract the 'sql_part' field from the response
+        message = data.get("sql_part", "")
+
+        # Yield each character in the message
+        for char in message:
+            yield char
+            time.sleep(0.01)
+    else:
+        # Handle the case where the request failed
+        raise Exception(f"Request failed with status code {response.status_code}")
 
 st.title("💬 Sage QL Chat Interface")
 st.write("🚀 This is where you'll interact with Sage QL. (Coming Soon!)")
@@ -29,7 +42,8 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         if message["role"] == "assistant":
-            st.code(message["content"], language="sql")
+            # st.code(message["content"], language="sql", wrap_lines=True)
+            st.markdown(message["content"])
         else:
             st.markdown(message["content"])
 
@@ -45,15 +59,8 @@ if prompt := st.chat_input("What is up?"):
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.write("Generating SQL query...")
-
-        sql_code = ""  # Initialize empty SQL code block
-        sql_display = st.empty()  # Create a placeholder for streaming output
-
-        for chunk in fetch_sql_stream(prompt):
-            sql_code += chunk + " "  # Append each chunk to the SQL code
-            sql_display.code(sql_code, language="sql")  # Update display dynamically
-            # st.code(output, language="sql")  # ✅ Correct way to stream response
+        output = st.write_stream(fetch_sql_stream(prompt))
 
     
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": sql_code})
+    st.session_state.messages.append({"role": "assistant", "content": output})
