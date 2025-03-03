@@ -30,7 +30,8 @@ def fetch_sql_stream(query):
         # Handle the case where the request failed
         raise Exception(f"Request failed with status code {response.status_code}")
 
-st.title("💬 Sage QL Chat Interface")
+# st.title("💬 Sage QL Chat Interface")
+st.title("💬 Astral Whisper Chat Interface")
 st.write("🚀 This is where you'll interact with Sage QL. (Coming Soon!)")
 st.title("Simple chat")
 
